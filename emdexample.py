@@ -19,22 +19,21 @@ with np.load('/Applications/Documents/research/Germany/GermanyT.npz') as data:#o
 #assign EEMD to 'eemd' variable
 emd=EMD()
 #execute EEMD on T
-IMFs=emd.emd(T[:,1,1])
-nIMFs=IMFs.shape[0]+1
+IMFs=emd.emd(T[1:1000,1,1])
+nIMFs=IMFs.shape[0]
+print(nIMFs)
 #plot results
 plt.figure(figsize=(12,9))
 plt.subplot(nIMFs,1,1)
-plt.plot(tim,T[:,1,1],'r')
+plt.plot(tim[1:1000],T[1:1000,1,1],'r')
 
-for n in enumerate(IMFs):
-    plt.subplot(nIMFs,1,n+2)
-    plt.plot(tim,IMFs[n],'g')
+for n in range(nIMFs):
+    plt.subplot(nIMFs+1,1,n+2)
+    plt.plot(tim[1:1000],IMFs[n],'g')
     plt.ylabel("IMF %i" %(n+1))
     plt.locator_params(axis='y',nbins=5)
 
 plt.xlabel("Time [time]")
-plt.tight_layout()
-plt.savefig('/emd_example',dpi=150)
 plt.show()
 
-print('done')
+print("done")
