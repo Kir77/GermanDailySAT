@@ -10,7 +10,8 @@ from mpl_toolkits.basemap import Basemap, cm
 import numpy as np
 import matplotlib.pyplot as plt
 
-# plot temperature
+# plot rainfall from NWS using special precipitation
+# colormap used by the NWS, and included in basemap.
 
 with np.load('/Applications/Documents/research/Germany/GermanyT.npz') as data:#open the dataset
 #initialize
@@ -18,9 +19,8 @@ with np.load('/Applications/Documents/research/Germany/GermanyT.npz') as data:#o
     lon=data['lon']
     T=data['T']
     tim=data['tim']
-data = T[1,:,:]
-data.shape=(34,42)
-data=np.where(data<-99,np.nan,data)
+data = T[:,1,1]
+data=reshape
 lon_0 = (lon[0]+lon[-1])/2
 lat_0 = (lat[0]+lat[-1])/2
 # create figure and axes instances
@@ -36,20 +36,20 @@ m.drawcoastlines()
 m.drawstates()
 m.drawcountries()
 # draw parallels.
-parallels = np.arange(0.,90,2.5)
+parallels = np.arange(0.,90,10.)
 m.drawparallels(parallels,labels=[1,0,0,0],fontsize=10)
 # draw meridians
-meridians = np.arange(0.,180.,2.5)
+meridians = np.arange(180.,360.,10.)
 m.drawmeridians(meridians,labels=[0,0,0,1],fontsize=10)
 ny = data.shape[0]; nx = data.shape[1]
 lons, lats = m.makegrid(nx, ny) # get lat/lons of ny by nx evenly space grid.
 x, y = m(lons, lats) # compute map proj coordinates.
 # draw filled contours.
-clevs=np.linspace(np.nanmin(data),np.nanmax(data),20)
-#clevs = [-10,-8,-6,-4,-2,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36]
+clevs = [0,1,2.5,5,7.5,10,15,20,30,40,50,70,100,150,200,250,300,400,500,600,750]
 cs = m.contourf(x,y,data,clevs,cmap=cm.s3pcpn)
 # add colorbar.
 cbar = m.colorbar(cs,location='bottom',pad="5%")
-cbar.set_label('{^o}C')
+cbar.set_label('C')
 # add title
+plt.title(prcpvar.long_name+' for period ending '+prcpvar.dateofdata)
 plt.show()
