@@ -10,22 +10,25 @@ from mpl_toolkits.basemap import Basemap, cm
 import numpy as np
 import matplotlib.pyplot as plt
 import imageio,os
+import scipy.io as sio
+
+data1 = sio.loadmat('/Users/qimindeng/research/Germany/amp1.mat');
+amp = data1['amp1_new']
+
 # plot temperature
 
 with np.load('/Applications/Documents/research/Germany/GermanyT.npz') as data:#open the dataset
 #initialize
     lat=data['lat']
     lon=data['lon']
-    T=data['T']
     tim=data['tim']
 
 lon_0 = (lon[0]+lon[-1])/2
 lat_0 = (lat[0]+lat[-1])/2
 keyFrames=[]
-for t in range(30*365,30*400,30):
-    data = T[t,:,:]
-    data.shape=(34,42)
-    data=np.where(data<-99,np.nan,data)
+for t in range(0,365*68-1,365):
+    data = np.transpose(amp[:,:,t])
+    data=np.where(data==0,np.nan,data)
 # create figure and axes instances
     fig = plt.figure(figsize=(8,8))
     ax = fig.add_axes([0.1,0.1,0.8,0.8])
@@ -33,7 +36,7 @@ for t in range(30*365,30*400,30):
     m = Basemap(projection='lcc',lon_0=lon_0,lat_0=lat_0,\
                 llcrnrlat=lat[0],urcrnrlat=lat[-1],\
                 llcrnrlon=lon[0],urcrnrlon=lon[-1],\
-                resolution='l')
+                resolution='i')
 # draw coastlines, state and country boundaries, edge of map.
     m.drawcoastlines()
     m.drawstates()
@@ -49,18 +52,18 @@ for t in range(30*365,30*400,30):
     x, y = m(lons, lats) # compute map proj coordinates.
 # draw filled contours.
 #    clevs=np.linspace(np.nanmin(data),np.nanmax(data),20)
-    clevs = [-10,-8,-6,-4,-2,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36]
+    clevs = [6,6.5,7,7.5,8,8.5,9,9.5,10,10.5,11,11.5,12]
     cs = m.contourf(x,y,data,clevs,cmap=cm.s3pcpn_l)
 # add colorbar.
     cbar = m.colorbar(cs,location='bottom',pad="5%")
     cbar.set_label('{^o}C')
 # add title
-    plt.title('time:'+str((t/365+1950)))
-    filename = str(int(t/30-364)) + ".png"
+    plt.title('year:'+str(t/365+1950))
+    filename = str(int(t/365)) + ".png"
     plt.savefig(filename)
     keyFrames.append(filename)
  
 images = []
 for filename in keyFrames:
     images.append(imageio.imread(filename))
-imageio.mimsave('temperature.gif', images,duration=0.5) 
+imageio.mimsave('amplitude.gif', images,duration=0.5) 
